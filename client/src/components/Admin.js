@@ -45,7 +45,9 @@ const Admin = () => {
       }}
     >
       <form>
-        <h3>Admin Log in</h3>
+        <h3 style={{ color: "#808000", textShadow: "1px 1px black" }}>
+          Admin Log in
+        </h3>
 
         <div className="form-group">
           <label>Name</label>
