@@ -96,6 +96,61 @@ app.put("/products/:id", async (req, res) => {
   }
 });
 
+//* CREATE A NEW customer
+
+app.post("/customer", async (req, res) => {
+  try {
+    const { email, name, password } = req.body;
+
+    const newcustomer = await pool.query(
+      "INSERT INTO customer (customer_email,customer_name,customer_password) VALUES ($1,$2,$3) RETURNING *",
+      [email, name, password]
+    );
+
+    res.json(true);
+  } catch (err) {
+    res.json(false);
+    console.error(err.message);
+  }
+});
+
+//* Customer Login
+
+app.post("/CustomerLogin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const Response = await pool.query(
+      "SELECT* FROM customer WHERE customer_email=$1 and customer_password=$2",
+      [email, password]
+    );
+
+    if (Response.rows.length === 0) {
+      res.json(false);
+    } else {
+      res.json(true);
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//* ADD ORDER
+
+app.post("/orders", async (req, res) => {
+  try {
+    const { email, id, quantity } = req.body;
+    const neworder = await pool.query(
+      "INSERT INTO orders (customer_email,product_id,order_status,order_quantity) VALUES ($1,$2,$3,$4)",
+      [email, id, "Pending", quantity]
+    );
+
+    res.json(true);
+  } catch (err) {
+    res.json(false);
+    console.error(err.message);
+  }
+});
+
 //* App will start listening at port 5000
 
 app.listen(5000, () => {
