@@ -5,8 +5,10 @@ import { toast } from "react-toastify";
 const BuyProduct = ({ prod }) => {
   const id = prod.product_id;
   const email = localStorage.email;
+  const price = prod.product_price;
 
-  const [quantity, setquantity] = useState();
+  const [quantity, setquantity] = useState(1);
+  const [bill, setbill] = useState(prod.product_price * quantity);
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -15,7 +17,7 @@ const BuyProduct = ({ prod }) => {
   const orderProduct = async (e) => {
     e.preventDefault();
     try {
-      const body = { email, id, quantity };
+      const body = { email, id, quantity, price };
 
       const response = await fetch("http://localhost:5000/orders", {
         method: "POST",
@@ -72,15 +74,23 @@ const BuyProduct = ({ prod }) => {
           value={quantity}
           onChange={(event) => {
             setquantity(event.target.value);
+            setbill(prod.product_price * event.target.value);
           }}
         ></input>
+        <h1
+          style={{
+            fontSize: "2vw",
+          }}
+        >
+          Bill: {bill} $
+        </h1>
 
         <Modal.Footer>
           <Button className="btn btn-outline-danger" onClick={handleClose}>
             Close
           </Button>
           <Button className="btn btn-outline-primary" onClick={orderProduct}>
-            Save Changes
+            Make Purchase
           </Button>
         </Modal.Footer>
       </Modal>

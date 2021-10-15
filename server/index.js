@@ -138,10 +138,10 @@ app.post("/CustomerLogin", async (req, res) => {
 
 app.post("/orders", async (req, res) => {
   try {
-    const { email, id, quantity } = req.body;
+    const { email, id, quantity, price } = req.body;
     const neworder = await pool.query(
-      "INSERT INTO orders (customer_email,product_id,order_status,order_quantity) VALUES ($1,$2,$3,$4)",
-      [email, id, "Pending", quantity]
+      "INSERT INTO orders (customer_email,product_id,order_status,order_quantity,order_price) VALUES ($1,$2,$3,$4,$5)",
+      [email, id, "Pending", quantity, price * quantity]
     );
 
     res.json(true);
@@ -149,6 +149,29 @@ app.post("/orders", async (req, res) => {
     res.json(false);
     console.error(err.message);
   }
+});
+
+//* Get All Orders
+
+app.get("/viewOrders", async (req, res) => {
+  try {
+    const allorders = await pool.query(
+      "SELECT* FROM orders join product on orders.product_id=product.product_id"
+    );
+    res.json(allorders.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+//* DELETE AN ORDER
+
+app.delete("/orders/:id", async (req, res) => {
+  const { id } = req.params;
+  const deleteOrder = await pool.query("DELETE FROM orders WHERE order_id=$1", [
+    id,
+  ]);
+  res.json(true);
 });
 
 //* App will start listening at port 5000

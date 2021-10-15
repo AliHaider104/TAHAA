@@ -1,53 +1,63 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Home from "../Admin/Home";
-import BuyProduct from "./BuyProduct";
 
-const Dashboard = () => {
-  const [prodlist, setprodlist] = useState([]);
+const Orders = () => {
+  const [orderlist, setorderlist] = useState([]);
 
-  const getProducts = async () => {
+  const getOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/Products");
+      const response = await fetch("http://localhost:5000/vieworders");
       const data = await response.json();
-      setprodlist(data);
-      console.log(prodlist);
+      setorderlist(data);
+      console.log(orderlist);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const deleteOrder = async (id) => {
+    try {
+      const deleteOrder = await fetch(`http://localhost:5000/orders/${id}`, {
+        method: "DELETE",
+      });
+      setorderlist(orderlist.filter((todo) => todo.todo_id !== id));
+      toast.success("Order is Completed!");
     } catch (error) {
       console.error(error.message);
     }
   };
 
   useEffect(() => {
-    getProducts();
-  }, [prodlist]);
+    getOrders();
+  }, [orderlist]);
 
   return (
     <div>
       <h1
         style={{
-          fontSize: "3vw",
+          fontSize: "5vw",
+          marginLeft: "29%",
           color: "#2b6777",
           textShadow: "1px 1px #FFF",
         }}
       >
-        WELCOME {localStorage.email}
+        WELCOME ADMIN
       </h1>
-      <Home prodlist={prodlist} />
       <h1
         style={{
           fontSize: "5vw",
-          marginLeft: "40%",
+          marginLeft: "35%",
           color: "#2b6777",
           textShadow: "1px 1px #FFF",
         }}
       >
-        MY SHOP
+        ALL ORDERS
       </h1>
-      {prodlist.map((prod) => {
+      {orderlist.map((order) => {
         return (
           <div
-            key={prod.product_id}
+            key={order.order_id}
             style={{
               display: "flex",
               flexDirection: "row",
@@ -59,16 +69,6 @@ const Dashboard = () => {
               marginTop: "2%",
             }}
           >
-            <img
-              alt=""
-              style={{
-                marginTop: "1%",
-                width: "30%",
-                height: "20%",
-              }}
-              src={prod.product_image_url}
-            />
-
             <div
               style={{
                 display: "flex",
@@ -84,12 +84,12 @@ const Dashboard = () => {
                   textShadow: "1px 1px black",
                 }}
               >
-                {prod.product_name}
+                {order.customer_email}
               </h1>
-              <h1 style={{ fontSize: "1vw", color: "#6B8E23" }}>
-                {prod.product_description}
+              <h1>
+                Orders {order.order_quantity} {order.product_name}
               </h1>
-              <h1 style={{ fontSize: "1vw" }}>Price: {prod.product_price}$</h1>
+              <h1 style={{ fontSize: "1vw" }}>Bill: {order.order_price}$</h1>
             </div>
             <div
               style={{
@@ -98,7 +98,17 @@ const Dashboard = () => {
                 marginRight: "1%",
               }}
             >
-              <BuyProduct prod={prod} />
+              <button
+                onClick={() => deleteOrder(order.order_id)}
+                style={{
+                  height: "20%",
+                  width: "100%",
+                  fontSize: "1vw",
+                }}
+                className="btn btn-outline-danger btn-xs"
+              >
+                Completed
+              </button>
             </div>
           </div>
         );
@@ -107,4 +117,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Orders;

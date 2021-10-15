@@ -6,6 +6,7 @@ import AddProducts from "./components/Admin/AddProducts";
 import Customer from "./components/Customer/Singup";
 import CustomerLogin from "./components/Customer/Login";
 import Dashboard from "./components/Customer/Dashboard";
+import Orders from "./components/Admin/ViewOrders";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,6 +17,9 @@ export default function App() {
     <Router>
       <div>
         <Switch>
+          <Route path="/Orders">
+            <Orders />
+          </Route>
           <Route path="/Dashboard">
             <Dashboard />
           </Route>
